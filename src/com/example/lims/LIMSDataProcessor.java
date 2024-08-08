@@ -21,7 +21,7 @@ public class LIMSDataProcessor {
 
             Files.walk(reportDir)
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith("Report.TXT"))
+                    .filter(path -> path.toString().endsWith(".TXT"))
                     .forEach(path -> {
                         System.out.println("Processing file: " + path.getFileName());
                         processReport(path, masses);
@@ -52,65 +52,6 @@ public class LIMSDataProcessor {
         return masses;
     }
 
-
-//    private static void processReport(Path reportPath, Map<String, BigDecimal> masses) {
-//        System.out.println("Processing file: " + reportPath.toString());
-//
-//        try (BufferedReader br = new BufferedReader(new FileReader(reportPath.toFile()))) {
-//            String sampleName = "";
-//            String instrument = "";
-//            Date date = null;
-//            BigDecimal dilution = BigDecimal.ONE;
-//            BigDecimal sampleMass = null;
-//            Map<String, BigDecimal> analytes = new HashMap<>();
-//
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                System.out.println("Reading line: " + line);
-//
-//                // Extract Sample Name
-//                if (line.startsWith("Sample Name:")) {
-//                    sampleName = line.split(":")[1].split(",")[0].trim();
-//                    System.out.println("Sample Name found: " + sampleName);
-//                }
-//                // Extract Instrument and Date
-//                else if (line.contains("LCMS-")) {
-//                    instrument = line.split(" ")[0].trim();
-//                    String dateString = line.substring(line.lastIndexOf(' ') + 1);
-//                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-//                    date = sdf.parse(dateString);
-//                    System.out.println("Instrument and Date found: " + instrument + ", " + date);
-//                }
-//                // Extract Dilution
-//                else if (line.startsWith("Dilution:")) {
-//                    dilution = new BigDecimal(line.split(":")[1].trim());
-//                    System.out.println("Dilution found: " + dilution);
-//                }
-//                // Extract Analytes and their amounts
-//                else if (line.matches("^\\s*\\d+\\.\\d+\\s+\\S+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+e?-?\\d*\\s+\\d+\\.\\d+\\s+\\S+")) {
-//                    String[] parts = line.trim().split("\\s+");
-//                    String analyteName = parts[5].trim();
-//                    BigDecimal result = new BigDecimal(parts[4].trim());
-//                    result = result.multiply(dilution); // Apply dilution factor
-//                    analytes.put(analyteName, result);
-//                    System.out.println("Analyte found: " + analyteName + " with result: " + result);
-//                }
-//            }
-//
-//            // Fetch sample mass if available
-//            sampleMass = masses.getOrDefault(sampleName, BigDecimal.ZERO);
-//
-//            // Output results
-//            if (!sampleName.isEmpty()) {
-//                writeResults(sampleName, "SR", instrument, date, dilution, sampleMass, analytes);
-//            } else {
-//                System.out.println("No valid sample data found in the report file.");
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private static void processReport(Path reportPath, Map<String, BigDecimal> masses) {
         System.out.println("Processing file: " + reportPath.toString());
