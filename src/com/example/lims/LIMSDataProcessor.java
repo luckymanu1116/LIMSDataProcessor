@@ -3,6 +3,7 @@ package com.example.lims;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,71 +54,84 @@ public class LIMSDataProcessor {
     }
 
 
-    private static void processReport(Path reportPath, Map<String, BigDecimal> masses) {
-        System.out.println("Processing file: " + reportPath.toString());
+private static void processReport(Path reportPath, Map<String, BigDecimal> masses) {
+    System.out.println("Processing file: " + reportPath.toString());
 
-        try (BufferedReader br = new BufferedReader(new FileReader(reportPath.toFile()))) {
-            String sampleName = "";
-            String instrument = "";
-            Date date = null;
-            BigDecimal dilution = BigDecimal.ONE;
-            BigDecimal sampleMass = null;
-            Map<String, BigDecimal> analytes = new HashMap<>();
+    try (BufferedReader br = new BufferedReader(new FileReader(reportPath.toFile()))) {
+        String sampleName = "";
+        String instrument = "";
+        Date date = null;
+        BigDecimal dilution = BigDecimal.ONE;
+        BigDecimal sampleMass = null;
+        Map<String, BigDecimal> analytes = new HashMap<>();
 
-            String line;
-            boolean isDataSection = false; // To detect the start of data section
-            while ((line = br.readLine()) != null) {
-                System.out.println("Reading line: " + line);
+        String line;
+        boolean isDataSection = false; // To detect the start of data section
+        while ((line = br.readLine()) != null) {
+            System.out.println("Reading line: " + line);
 
-                // Detect the start of the analyte section
-                if (line.startsWith("Sorted By")) {
-                    isDataSection = true;
-                    continue;
-                }
+            // Detect the start of the analyte section
+            if (line.startsWith("Sorted By")) {
+                isDataSection = true;
+                continue;
+            }
 
-                // Extract Sample Name
-                if (line.startsWith("Sample Name:")) {
-                    sampleName = line.split(":")[1].split(",")[0].trim();
-                    System.out.println("Sample Name found: " + sampleName);
+            // Extract Sample Name
+            if (line.startsWith("Sample Name:")) {
+                sampleName = line.split(":")[1].split(",")[0].trim();
+                System.out.println("Sample Name found: " + sampleName);
+            }
+            // Extract Instrument and Date
+            else if (line.contains("LCMS-")) {
+                instrument = line.split(" ")[0].trim();
+                // Extract the date part from the line
+                String[] parts = line.split(" ");
+                if (parts.length >= 2) {
+                    String dateString = parts[parts.length - 2] + " " + parts[parts.length - 1];
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                        date = sdf.parse(dateString);
+                        System.out.println("Instrument and Date found: " + instrument + ", " + date);
+                    } catch (ParseException pe) {
+                        System.err.println("Failed to parse date: " + dateString);
+                    }
                 }
-                // Extract Instrument and Date
-                else if (line.contains("LCMS-")) {
-                    instrument = line.split(" ")[0].trim();
-                    String dateString = line.substring(line.lastIndexOf(' ') + 1);
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-                    date = sdf.parse(dateString);
-                    System.out.println("Instrument and Date found: " + instrument + ", " + date);
-                }
-                // Extract Dilution
-                else if (line.startsWith("Dilution:")) {
-                    dilution = new BigDecimal(line.split(":")[1].trim());
-                    System.out.println("Dilution found: " + dilution);
-                }
-                // Extract Analytes and their amounts
-                else if (isDataSection && line.matches("^\\s*\\d+\\.\\d+\\s+\\S+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+e?-?\\d*\\s+\\d+\\.\\d+\\s+\\S+")) {
-                    String[] parts = line.trim().split("\\s+");
+            }
+            // Extract Dilution
+            else if (line.startsWith("Dilution:")) {
+                dilution = new BigDecimal(line.split(":")[1].trim());
+                System.out.println("Dilution found: " + dilution);
+            }
+            // Extract Analytes and their amounts
+            else if (isDataSection && line.matches("^\\s*\\d+\\.\\d+\\s+\\S+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+e?-?\\d*\\s+\\d+\\.\\d+\\s+\\S+")) {
+                String[] parts = line.trim().split("\\s+");
+                if (parts.length >= 6) {
                     String analyteName = parts[5].trim();
                     BigDecimal result = new BigDecimal(parts[4].trim());
                     result = result.multiply(dilution); // Apply dilution factor
                     analytes.put(analyteName, result);
                     System.out.println("Analyte found: " + analyteName + " with result: " + result);
+                } else {
+                    System.out.println("Line format mismatch: " + line);
                 }
             }
-
-            // Fetch sample mass if available
-            sampleMass = masses.getOrDefault(sampleName, BigDecimal.ZERO);
-
-            // Output results
-            if (!sampleName.isEmpty()) {
-                writeResults(sampleName, "SR", instrument, date, dilution, sampleMass, analytes);
-            } else {
-                System.out.println("No valid sample data found in the report file.");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        // Fetch sample mass if available
+        sampleMass = masses.getOrDefault(sampleName, BigDecimal.ZERO);
+
+        // Output results
+        if (!sampleName.isEmpty()) {
+            writeResults(sampleName, "SR", instrument, date, dilution, sampleMass, analytes);
+        } else {
+            System.out.println("No valid sample data found in the report file.");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
 
 
 
