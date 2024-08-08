@@ -1,0 +1,46 @@
+Data File C:\CHEM32\1\DATA\12-14CAN#068-072\LCMS-212-14CAN#068-072 2016-12-15 06-05-46\1AC-0901.D
+Sample Name: ,16-811-3,081616.M,x100
+LCMS-2 12/15/2016 9:33:53 PM E Portillo
+
+=====================================================================
+Acq. Operator   : E Portillo                     Seq. Line :   9
+Acq. Instrument : LCMS-2                          Location : P1-A-03
+Injection Date  : 12/15/2016 8:34:41 AM                Inj :   1
+                                                Inj Volume : 3.0 µl
+Acq. Method     : C:\CHEM32\1\DATA\12-14CAN#068-072\LCMS-212-14CAN#068-072 2016-12-15 06-05-
+                  46\CANNS_LUNA-OMEGA_H3PO4.M
+Last changed    : 10/19/2016 7:29:50 AM by T COSSEL
+Analysis Method : C:\CHEM32\1\METHODS\CANNS_LUNAOMEGA_H3PO4-REG-CALB 081616.M
+Last changed    : 12/15/2016 9:32:23 PM by E Portillo
+                  (modified after loading)
+Method Info     : Column wash and system shutdown/standby mode.  This program is for column
+                  size: 4.6 x 50 mm. (eg: XDB - C-18).
+
+=====================================================================
+                      External Standard Report                       
+=====================================================================
+
+Sorted By             :      Signal
+Calib. Data Modified  :      12/15/2016 9:32:35 PM
+Multiplier:                   :      1.0000
+Dilution:                     :      1.0000
+Do not use Multiplier & Dilution Factor with ISTDs
+
+Signal 1: DAD1 A, Sig=228,4 Ref=275,30
+
+RetTime  Type     Area     Amt/Area    Amount   Grp   Name
+ [min]          [mAU*s]               [µg/mL]  
+-------|------|----------|----------|----------|--|------------------
+  4.960 BB      103.05010 4.90821e-2    5.05791    CBDA                                              
+  5.800            -          -          -         CBD                                               
+  6.925            -          -          -         CBN                                               
+  7.557 BB       61.72371 7.40035e-2    4.56777    THC                                               
+  8.010 BB     1020.81024 6.17162e-2   63.00050    THCA                                              
+Totals :                               72.62618
+
+1 Warnings or Errors :
+
+Warning : Calibrated compound(s) not found
+
+=====================================================================
+                          *** End of Report ***
